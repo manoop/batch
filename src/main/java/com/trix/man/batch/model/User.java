@@ -6,16 +6,16 @@ import javax.persistence.Id;
 @Entity
 public class User {
     @Id
-    private Integer id;
+    private String id;
     private String name;
     private String dept;
-    private Integer salary;
+    private String salary;
 
-    public Integer getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(String id) {
         this.id = id;
     }
 
@@ -35,11 +35,11 @@ public class User {
         this.dept = dept;
     }
 
-    public Integer getSalary() {
+    public String getSalary() {
         return salary;
     }
 
-    public void setSalary(Integer salary) {
+    public void setSalary(String salary) {
         this.salary = salary;
     }
 

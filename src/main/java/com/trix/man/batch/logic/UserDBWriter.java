@@ -1,6 +1,8 @@
 package com.trix.man.batch.logic;
 
 import com.trix.man.batch.model.User;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.batch.item.ItemWriter;
 
 import javax.annotation.PreDestroy;
@@ -9,6 +11,7 @@ import java.util.List;
 
 public class UserDBWriter implements ItemWriter<User>, Closeable{
     private final PrintWriter writer;
+    private static final Logger LOGGER = LoggerFactory.getLogger(UserDBWriter.class);
 
     public UserDBWriter() {
         OutputStream out;
@@ -23,6 +26,7 @@ public class UserDBWriter implements ItemWriter<User>, Closeable{
     @Override
     public void write(final List<? extends User> items) throws Exception {
         for (User item : items) {
+            LOGGER.info(" --> Writing: {}", item.getId());
             writer.println(item.toString());
         }
     }
