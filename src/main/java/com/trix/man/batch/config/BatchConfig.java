@@ -32,7 +32,7 @@ import java.util.Arrays;
 @Configuration
 public class BatchConfig {
 
-    private static final String CSV_FILE = "/Users/chakkaru/Desktop/GCP/batch/batch/src/main/resources/user.csv";
+//    private static final String CSV_FILE = "/Users/chakkaru/Desktop/GCP/batch/batch/src/main/resources/user.csv";
 
     @Value("${taxis.batch.chunk.size}")
     private int chunkSize;
