@@ -41,7 +41,8 @@ public class JdbcItemReader extends JdbcPagingItemReader<User> {
         SqlPagingQueryProviderFactoryBean queryProvider=new SqlPagingQueryProviderFactoryBean();
         queryProvider.setDataSource(ds);
         queryProvider.setSelectClause("id, name, dept, salary ");
-        queryProvider.setFromClause("taxis.user");
+        queryProvider.setFromClause("taxis.user PARTITION(P0)");
+
         queryProvider.setSortKey("id");
         queryProvider.setWhereClause("id not in (select id from user_stat)");
         try {
