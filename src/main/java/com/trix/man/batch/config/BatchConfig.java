@@ -95,6 +95,7 @@ public class BatchConfig {
 
     @PreDestroy
     public void destroy() throws NoSuchJobException, NoSuchJobExecutionException, JobExecutionNotRunningException {
+        /**Graceful shutdown**/
         jobs.getJobNames().forEach(name -> System.out.println("job name: {}"+name));
         Set<Long> executions = jobOperator.getRunningExecutions(JOB_NAME);
         jobOperator.stop(executions.iterator().next());
