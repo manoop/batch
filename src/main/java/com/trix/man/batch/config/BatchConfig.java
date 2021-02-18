@@ -9,8 +9,7 @@ import org.springframework.batch.core.configuration.annotation.JobBuilderFactory
 import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
 import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.batch.core.explore.JobExplorer;
-import org.springframework.batch.core.launch.JobLauncher;
-import org.springframework.batch.core.launch.NoSuchJobException;
+import org.springframework.batch.core.launch.*;
 import org.springframework.batch.core.launch.support.RunIdIncrementer;
 import org.springframework.batch.item.ItemProcessor;
 import org.springframework.batch.item.ItemWriter;
@@ -28,6 +27,7 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import javax.annotation.PreDestroy;
 import javax.sql.DataSource;
 import java.util.Arrays;
+import java.util.Set;
 
 @Configuration
 public class BatchConfig {
@@ -56,6 +56,9 @@ public class BatchConfig {
 
     @Autowired
     JdbcTemplate jdbcTemplate;
+
+    @Autowired
+    JobOperator jobOperator;
 
     @Autowired
     private JobExplorer jobs;
@@ -91,14 +94,10 @@ public class BatchConfig {
     }
 
     @PreDestroy
-    public void destroy() throws NoSuchJobException {
+    public void destroy() throws NoSuchJobException, NoSuchJobExecutionException, JobExecutionNotRunningException {
         jobs.getJobNames().forEach(name -> System.out.println("job name: {}"+name));
-        jobs.getJobInstances(JOB_NAME, 0, jobs.getJobInstanceCount(JOB_NAME)).forEach(
-                jobInstance -> {
-                    System.out.println("job instance id {}"+jobInstance.getInstanceId());
-                }
-        );
-
+        Set<Long> executions = jobOperator.getRunningExecutions(JOB_NAME);
+        jobOperator.stop(executions.iterator().next());
     }
 
     @Scheduled(fixedRate = 500000)

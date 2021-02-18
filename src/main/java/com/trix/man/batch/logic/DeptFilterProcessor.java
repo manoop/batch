@@ -22,7 +22,7 @@ public class DeptFilterProcessor implements ItemProcessor<User, User> {
     @Override
     public User process(User item) throws Exception {
         LOGGER.info("*** Processing: {} with thread_id {}", item.getId(), Thread.currentThread().getId());
-        Thread.sleep(1000);
+        Thread.sleep(5000);
         return item;
     }
 }

@@ -21,12 +21,13 @@ public class JdbcItemReader extends JdbcPagingItemReader<User> {
         setQueryProvider(queryProvider(ds));
         setRowMapper(rowMapper());
     }
+
     private RowMapper<User> rowMapper() {
         return new RowMapper<User>() {
 
             @Override
             public User mapRow(ResultSet rs, int rowNum) throws SQLException {
-                User user=new User();
+                User user = new User();
 
                 user.setId(String.valueOf(rs.getLong("id")));
                 user.setName(rs.getString("name"));
@@ -38,10 +39,10 @@ public class JdbcItemReader extends JdbcPagingItemReader<User> {
     }
 
     private PagingQueryProvider queryProvider(DataSource ds) {
-        SqlPagingQueryProviderFactoryBean queryProvider=new SqlPagingQueryProviderFactoryBean();
+        SqlPagingQueryProviderFactoryBean queryProvider = new SqlPagingQueryProviderFactoryBean();
         queryProvider.setDataSource(ds);
         queryProvider.setSelectClause("id, name, dept, salary ");
-        queryProvider.setFromClause("taxis.user PARTITION(P0)");
+        queryProvider.setFromClause("taxis.user");
 
         queryProvider.setSortKey("id");
         queryProvider.setWhereClause("id not in (select id from user_stat)");
