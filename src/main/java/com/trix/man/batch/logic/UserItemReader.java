@@ -57,10 +57,10 @@ private String csvFile;
             LOGGER.info("Reading record : {} with processing count {}", record.get("id"), processingCount);
             if(processingCount<=1000) {
                 User user = new User();
-                user.setId(record.get("id"));
+                user.setId(Integer.getInteger(record.get("id")));
                 user.setName(record.get("name"));
                 user.setDept(record.get("dept"));
-                user.setSalary(record.get("salary"));
+                user.setSalary(Integer.getInteger(record.get("salary")));
                 users.add(user);
             }
         }

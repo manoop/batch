@@ -1,9 +1,9 @@
 package com.trix.man.batch.config;
 
 import com.trix.man.batch.logic.DeptFilterProcessor;
-import com.trix.man.batch.logic.JdbcItemReader;
 import com.trix.man.batch.logic.UserDBWriter;
 import com.trix.man.batch.model.User;
+import com.trix.man.batch.repository.UserRepository;
 import org.springframework.batch.core.*;
 import org.springframework.batch.core.configuration.annotation.JobBuilderFactory;
 import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
@@ -13,6 +13,8 @@ import org.springframework.batch.core.launch.*;
 import org.springframework.batch.core.launch.support.RunIdIncrementer;
 import org.springframework.batch.item.ItemProcessor;
 import org.springframework.batch.item.ItemWriter;
+import org.springframework.batch.item.data.RepositoryItemReader;
+import org.springframework.batch.item.data.builder.RepositoryItemReaderBuilder;
 import org.springframework.batch.item.support.CompositeItemProcessor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -20,19 +22,18 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.task.SimpleAsyncTaskExecutor;
 import org.springframework.core.task.TaskExecutor;
-import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.data.domain.Sort;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
+import org.springframework.transaction.PlatformTransactionManager;
 
 import javax.annotation.PreDestroy;
 import javax.sql.DataSource;
-import java.util.Arrays;
-import java.util.Set;
+import java.util.*;
 
 @Configuration
 public class BatchConfig {
 
-    private static final String CSV_FILE = "/Users/chakkaru/Desktop/GCP/batch/batch/src/main/resources/user.csv";
 
     @Value("${taxis.batch.chunk.size}")
     private int chunkSize;
@@ -55,9 +56,6 @@ public class BatchConfig {
     private static final String JOB_NAME = "taxis-batch";
 
     @Autowired
-    JdbcTemplate jdbcTemplate;
-
-    @Autowired
     JobOperator jobOperator;
 
     @Autowired
@@ -68,6 +66,10 @@ public class BatchConfig {
 
     @Autowired
     private DataSource dataSource;
+
+    @Autowired private UserRepository userRepository;
+
+    @Autowired PlatformTransactionManager jpaTransactionManager;
 
     @Bean
     public Job job(){
@@ -113,6 +115,7 @@ public class BatchConfig {
     @Bean
     public Step chunkStep(TaskExecutor taskExecutor) {
         Step step = stepBuilderFactory.get("taxis-load")
+                .transactionManager(jpaTransactionManager)
                 .<User, User>chunk(chunkSize)
                 .reader(reader())
                 .processor(processor())
@@ -127,7 +130,7 @@ public class BatchConfig {
     @StepScope
     @Bean
     public ItemWriter<User> writer() {
-        return new UserDBWriter();
+        return new UserDBWriter(userRepository);
     }
 
 
@@ -145,16 +148,24 @@ public class BatchConfig {
         return processor;
     }
 
-//    @Bean
-//    @StepScope
-//    public ItemReader<User> reader() {
-//        return new UserItemReader(CSV_FILE);
-//    }
 
     @Bean
     @StepScope
-    public JdbcItemReader reader() {
-        return new JdbcItemReader(dataSource, chunkSize);
+    public RepositoryItemReader<User> reader() {
+        Map<String, Sort.Direction> sorts = new HashMap<>();
+        sorts.put("id", Sort.Direction.DESC);
+
+        List<Object> methodArgs = new ArrayList<>();
+        methodArgs.add("NEW");
+        RepositoryItemReader itemReader = new RepositoryItemReaderBuilder()
+                .repository(userRepository)
+                .methodName("findByTempstatus")
+                .arguments(methodArgs)
+                .pageSize(10)
+                .sorts(sorts)
+                .saveState(false)
+                .build();
+        return itemReader;
     }
 
 }

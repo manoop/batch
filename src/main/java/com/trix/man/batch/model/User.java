@@ -2,20 +2,40 @@ package com.trix.man.batch.model;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.Table;
 
 @Entity
+@Table(name = "USER")
 public class User {
     @Id
-    private String id;
+    private Integer id;
     private String name;
     private String dept;
-    private String salary;
+    private Integer salary;
+    private String status;
+    private String tempstatus;
 
-    public String getId() {
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public String getTempstatus() {
+        return tempstatus;
+    }
+
+    public void setTempstatus(String tempstatus) {
+        this.tempstatus = tempstatus;
+    }
+
+    public Integer getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
@@ -35,11 +55,11 @@ public class User {
         this.dept = dept;
     }
 
-    public String getSalary() {
+    public Integer getSalary() {
         return salary;
     }
 
-    public void setSalary(String salary) {
+    public void setSalary(Integer salary) {
         this.salary = salary;
     }
 

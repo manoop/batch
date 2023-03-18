@@ -11,13 +11,10 @@ import org.springframework.jdbc.core.JdbcTemplate;
 
 public class UserItemWriteListener implements ItemWriteListener<User> {
 
-    @Autowired
-    private JdbcTemplate jdbcTemplate;
 
     public UserItemWriteListener() {
     }
 
-    private String INSERT_QUERY = "insert into user_stat(id, name, dept, salary) values (?,?,?,?)";
 
 
 
@@ -30,15 +27,5 @@ public class UserItemWriteListener implements ItemWriteListener<User> {
 
     }
     public void afterWrite(List items) {
-        System.out.println("Feeding the stats table");
-        int result = 0;
-
-        for(Object obj: items){
-            User user = (User) obj;
-            Object[] params = {user.getId(),user.getName(), user.getDept(),user.getSalary()};
-            result += jdbcTemplate.update(INSERT_QUERY, params);
-
-        }
-        System.out.println("Number of rows inserted: "+ result);
     }
 }

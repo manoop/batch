@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<Configuration status="DEBUG">
+    <Appenders>
+        <Console name="LogToConsole" target="SYSTEM_OUT">
+            <PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n"/>
+        </Console>
+        <File name="logfile" fileName="./logs/app.log" immediateFlush="true">
+            <PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n"/>
+        </File>
+    </Appenders>
+    <Loggers>
+        <!-- avoid duplicated logs with additivity=false -->
+        <Logger name="com.trix.man.batch" level="debug" additivity="false">
+            <AppenderRef ref="LogToConsole"/>
+        </Logger>
+        <Logger name="org.springframework" level="trace" additivity="false">
+            <AppenderRef ref="LogToConsole"/>
+        </Logger>
+        <Logger name="com.trix.man.batch" level="debug" additivity="false">
+            <AppenderRef ref="logfile"/>
+        </Logger>
+        <Logger name="org.hibernate.SQL" level="debug">
+            <AppenderRef ref="logfile"/>
+        </Logger>
+        <Logger name="org.hibernate.type.descriptor.sql" level="trace">
+            <AppenderRef ref="logfile"/>
+        </Logger>
+
+        <Logger name="org.springframework" level="trace" additivity="false">
+            <AppenderRef ref="logfile"/>
+        </Logger>
+        <Root level="error">
+            <AppenderRef ref="LogToConsole"/>
+        </Root>
+    </Loggers>
+</Configuration>
